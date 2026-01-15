@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Database
+library.db
+*.db
+
+# Streamlit
+.streamlit/secrets.toml
+
+# PyInstaller / Build
+build/
+dist/
+*.spec
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# AI / Temporary
+.gemini/
+.agent/
+task.md
+implementation_plan.md
+walkthrough.md
