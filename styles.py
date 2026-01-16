@@ -90,7 +90,39 @@ def apply_global_styles():
         .bible-tag { background-color: #e8f0fe; color: #1558d6; padding: 2px 8px; border-radius: 10px; font-weight: 700; font-size: 0.8em; }
         .date-badge { background-color: #f1f3f4; color: #3c4043; padding: 2px 6px; border-radius: 4px; font-weight: 600; font-size: 0.8em; border: 1px solid #dadce0; }
         
-        /* 히트맵 스타일 */
+        /* 히트맵 버튼 그리드 스타일 (v4.9.2) */
+        div[data-testid="stHorizontalBlock"] div.heatmap-grid-btn button {
+            width: 70px !important;
+            height: 70px !important;
+            min-width: 70px !important;
+            max-width: 70px !important;
+            padding: 4px !important;
+            margin: 2px !important;
+            border-radius: 12px !important;
+            font-size: 0.75rem !important;
+            font-weight: bold !important;
+            line-height: 1.2 !important;
+            white-space: pre-wrap !important;
+            transition: transform 0.2s, box-shadow 0.2s !important;
+        }
+        div[data-testid="stHorizontalBlock"] div.heatmap-grid-btn button:hover {
+            transform: scale(1.15) !important;
+            z-index: 10 !important;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2) !important;
+        }
+        div[data-testid="stHorizontalBlock"] div.heatmap-grid-btn button p {
+            font-size: 0.75rem !important;
+            line-height: 1.2 !important;
+            margin: 0 !important;
+        }
+        
+        /* 선택된 히트맵 버튼 강조 */
+        div.heatmap-selected button {
+            border: 3px solid #333 !important;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3) !important;
+        }
+        
+        /* 기존 히트맵 스타일 (하위 호환) */
         .heatmap-container { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
         .heatmap-box {
             width: 70px; height: 70px; border-radius: 12px;
