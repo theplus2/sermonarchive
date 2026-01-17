@@ -50,6 +50,23 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install pyinstaller
+
+      - name: Generate macOS Icon
+        run: |
+          # Create iconset folder
+          mkdir icon.iconset
+          # Generate various sizes from icon.png (256x256 source)
+          sips -z 16 16     icon.png --out icon.iconset/icon_16x16.png
+          sips -z 32 32     icon.png --out icon.iconset/icon_16x16@2x.png
+          sips -z 32 32     icon.png --out icon.iconset/icon_32x32.png
+          sips -z 64 64     icon.png --out icon.iconset/icon_32x32@2x.png
+          sips -z 128 128   icon.png --out icon.iconset/icon_128x128.png
+          sips -z 256 256   icon.png --out icon.iconset/icon_128x128@2x.png
+          sips -z 256 256   icon.png --out icon.iconset/icon_256x256.png
+          sips -z 512 512   icon.png --out icon.iconset/icon_256x256@2x.png
+          sips -z 512 512   icon.png --out icon.iconset/icon_512x512.png
+          # Convert iconset to icns
+          iconutil -c icns icon.iconset
           
       - name: Build with PyInstaller
         run: python build.py
@@ -57,7 +74,7 @@ jobs:
       - name: Move App Bundle to dist folder
         run: |
           cd dist
-          zip -r sermon_archive_v5.0.4_mac.zip .
+          zip -r sermon_archive_v5.0.5_mac.zip .
           
       - name: Upload macOS Artifact
         uses: actions/upload-artifact@v4

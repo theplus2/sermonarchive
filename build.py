@@ -11,7 +11,7 @@ try:
 except:
     pass
 
-VERSION = "v5.0.4"
+VERSION = "v5.0.5"
 print(f"🚀 빌드 준비 중... ({VERSION}) 기존 빌드 폴더를 정리합니다.")
 
 # 1. 기존 빌드 잔여물 깨끗이 삭제
@@ -40,11 +40,11 @@ if platform.system() == "Windows":
     icon_path = os.path.join(current_dir, icon_file)
     if os.path.exists(icon_path):
         use_icon = True
-# elif platform.system() == "Darwin":
-#     icon_file = "icon.icns"
-#     icon_path = os.path.join(current_dir, icon_file)
-#     if os.path.exists(icon_path):
-#        use_icon = True
+elif platform.system() == "Darwin":
+    icon_file = "icon.icns"
+    icon_path = os.path.join(current_dir, icon_file)
+    if os.path.exists(icon_path):
+       use_icon = True
 
 required_files = ['run.py', 'app.py', 'tabs.py', 'styles.py', 'processor.py']
 if use_icon:
