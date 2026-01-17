@@ -1,0 +1,10 @@
+streamlit
+pandas
+python-docx
+wordcloud
+matplotlib
+Pillow
+pyhwp
+olefile
+altair
+watchdog
