@@ -37,6 +37,8 @@ for f in required_files:
 print("📦 PyInstaller 공장 가동! v5.0 버전으로 포장합니다...")
 
 # 3. PyInstaller 실행 설정
+sep = ';' if platform.system() == "Windows" else ':'
+
 PyInstaller.__main__.run([
     'run.py',                       # 1. 실행 진입점
     '--name=설교자의서재v5.0',        # 2. [수정] 파일 이름 v5.0로 변경!
@@ -45,11 +47,11 @@ PyInstaller.__main__.run([
     '--clean',                      # 5. 캐시 초기화
     '--noconsole',                  # 6. 콘솔창 숨기기
     
-    # 소스 코드 포함
-    '--add-data=app.py;.',
-    '--add-data=tabs.py;.',
-    '--add-data=styles.py;.',
-    '--add-data=processor.py;.',
+    # 소스 코드 포함 (OS별 구분자 사용)
+    f'--add-data=app.py{sep}.',
+    f'--add-data=tabs.py{sep}.',
+    f'--add-data=styles.py{sep}.',
+    f'--add-data=processor.py{sep}.',
     
     # 숨겨진 라이브러리 명시
     '--hidden-import=streamlit',
@@ -72,8 +74,8 @@ PyInstaller.__main__.run([
     '--collect-all=tkinter',            
     '--collect-all=matplotlib',
     '--collect-all=docx',
-    '--collect-all=hwp5',               # HWP 텍스트 추출용 (pyhwp)
-    '--collect-all=olefile',            # HWP fallback 추출용
+    # '--collect-all=hwp5',               # 과도한 수집 방지
+    # '--collect-all=olefile',            # 과도한 수집 방지
 ])
 
 print("\n" + "="*50)
