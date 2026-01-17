@@ -482,7 +482,7 @@ def render_settings(config, save_config_func, APP_DATA_DIR, DB_PATH):
 # 5. 도움말
 def render_help():
     st.title("❓ 도움말 (User Manual)")
-    st.caption("설교자의 서재 v5.0.3 사용 가이드")
+    st.caption("설교자의 서재 v5.0.4 사용 가이드")
     
     # 아이콘 및 마크다운 제거하여 깔끔하게 표시
     # Stremlit의 st.tabs는 마크다운을 일부 지원하지만, 때로 기호가 깨질 수 있음.

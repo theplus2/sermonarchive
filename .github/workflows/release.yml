@@ -57,7 +57,7 @@ jobs:
       - name: Move App Bundle to dist folder
         run: |
           cd dist
-          zip -r sermon_archive_v5.0.3_mac.zip .
+          zip -r sermon_archive_v5.0.4_mac.zip .
           
       - name: Upload macOS Artifact
         uses: actions/upload-artifact@v4
