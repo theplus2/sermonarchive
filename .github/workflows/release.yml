@@ -57,9 +57,7 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           pip install pyinstaller
 
-      - name: Install create-dmg
-        run: |
-          brew install create-dmg
+          # Skipping create-dmg install - using native hdiutil instead
 
       - name: Generate macOS Icon
         run: |
@@ -115,16 +113,11 @@ jobs:
           echo "Signing app with ad-hoc signature..."
           codesign --force --deep --sign - "$APP_NAME"
           
-          # Create DMG (simplified to avoid cosmetic option failures)
-          # Note: create-dmg can fail on certain optional features, so we use a simpler invocation
-          create-dmg \
-            --volname "$VOL_NAME" \
-            --window-pos 200 120 \
-            --window-size 600 400 \
-            --icon-size 100 \
-            --app-drop-link 400 185 \
-            "$DMG_NAME" \
-            "$APP_NAME" || hdiutil create -volname "$VOL_NAME" -srcfolder "$APP_NAME" -ov -format UDZO "$DMG_NAME"
+          # Create DMG using native hdiutil (most reliable method)
+          hdiutil create -volname "$VOL_NAME" -srcfolder "$APP_NAME" -ov -format UDZO "$DMG_NAME"
+          
+          echo "DMG created: $DMG_NAME"
+          ls -la *.dmg
 
       - name: Upload macOS Artifact
         uses: actions/upload-artifact@v4
