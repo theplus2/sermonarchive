@@ -2,19 +2,27 @@ import streamlit as st
 import json
 import os
 import sys
-import processor
 import time
-import styles # 분리한 스타일 파일
-import tabs   # 분리한 기능 파일
+import platform
 import streamlit.components.v1 as components
+
+# 새롭게 분리된 모듈 임포트
+try:
+    from src.core import processor
+    from src.ui import styles
+    from src.ui.tabs import workspace, chronicle, statistics, settings, help as help_tab
+except ImportError:
+    # 빌드 환경 등을 위해 sys.path 추가 또는 상대 경로 처리
+    sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
+    from core import processor
+    from ui import styles
+    from ui.tabs import workspace, chronicle, statistics, settings, help as help_tab
 
 # ==========================================
 # ⚙️ 설정 및 초기화
 # ==========================================
 st.set_page_config(layout="wide", page_title="설교자의 서재 v5.2.0")
 
-# 경로 설정 (크로스 플랫폼 지원)
-import platform
 system_os = platform.system()
 
 if system_os == "Windows":
@@ -41,14 +49,12 @@ styles.apply_global_styles()
 with st.sidebar:
     st.title("📚 메뉴")
     
-    # 홈 버튼
     if st.button("🏠 홈", use_container_width=True):
         st.session_state['mode'] = 'main_menu'
         st.rerun()
     
     st.divider()
     
-    # 메인 메뉴들
     if st.button("✍️ 작업실", use_container_width=True):
         st.session_state['mode'] = 'workspace'
         st.rerun()
@@ -70,7 +76,6 @@ with st.sidebar:
         st.rerun()
     
     st.divider()
-    
     
     if st.button("❌ 프로그램 완전 종료", type="primary", use_container_width=True):
         st.warning("종료 중입니다...")
@@ -98,7 +103,7 @@ config = load_config()
 if 'startup_sync_done' not in st.session_state:
     target = config.get("target_folder")
     if target and os.path.exists(target):
-        cnt, msg = processor.sync_files(target)
+        cnt, msg = processor.sync_files(target, DB_PATH)
         if cnt > 0: st.toast(f"🎉 새 설교 {cnt}편 업데이트 완료!")
     st.session_state['startup_sync_done'] = True
 
@@ -108,7 +113,6 @@ if 'mode' not in st.session_state: st.session_state['mode'] = 'main_menu'
 # 🚀 메인 라우팅 (화면 전환)
 # ==========================================
 
-# 공통 푸터 함수
 def render_footer():
     st.markdown("---")
     st.caption("Developed by 윤영천 목사 (theplus2@gmail.com)")
@@ -119,7 +123,6 @@ if st.session_state['mode'] == 'main_menu':
     st.caption("Developed by **잠실한빛교회 윤영천 목사** (theplus2@gmail.com)")
     st.divider()
     
-    # 홈 화면 4x2 그리드
     c1,c2,c3,c4 = st.columns(4, gap="medium")
     with c1:
         if st.button("✍️\n\n**작업실**\n설교 작성"): st.session_state['mode']='workspace'; st.rerun()
@@ -139,25 +142,25 @@ if st.session_state['mode'] == 'main_menu':
 
 elif st.session_state['mode'] == 'workspace':
     styles.apply_subpage_styles()
-    tabs.render_workspace(config, DRAFTS_DIR)
+    workspace.render_workspace(config, DRAFTS_DIR, DB_PATH)
     render_footer()
 
 elif st.session_state['mode'] == 'chronicle':
     styles.apply_subpage_styles()
-    tabs.render_chronicle()
+    chronicle.render_chronicle(DB_PATH)
     render_footer()
 
 elif st.session_state['mode'] == 'statistics':
     styles.apply_subpage_styles()
-    tabs.render_statistics()
+    statistics.render_statistics(DB_PATH)
     render_footer()
 
 elif st.session_state['mode'] == 'settings':
     styles.apply_settings_styles()
-    tabs.render_settings(config, save_config, APP_DATA_DIR, DB_PATH)
+    settings.render_settings(config, save_config, APP_DATA_DIR, DB_PATH)
     render_footer()
 
 elif st.session_state['mode'] == 'help':
     styles.apply_subpage_styles()
-    tabs.render_help()
+    help_tab.render_help()
     render_footer()
