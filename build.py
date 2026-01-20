@@ -11,7 +11,7 @@ try:
 except:
     pass
 
-VERSION = "v5.1.9"
+VERSION = "v5.2.0"
 print(f"🚀 빌드 준비 중... ({VERSION}) 기존 빌드 폴더를 정리합니다.")
 
 # 1. 기존 빌드 잔여물 깨끗이 삭제
@@ -63,7 +63,7 @@ sep = ';' if platform.system() == "Windows" else ':'
 # 기본 옵션 리스트 생성
 build_args = [
     'run.py',                       # 1. 실행 진입점
-    f'--name=설교자의서재{VERSION}',  # 2. 파일 이름
+    f'--name=SermonArchive_{VERSION}',  # 2. 파일 이름 (영문으로 변경 - macOS 호환성)
     '--onefile',                    # 4. 파일 하나로
     '--clean',                      # 5. 캐시 초기화
     '--noconsole',                  # 6. 콘솔창 숨기기
@@ -105,5 +105,5 @@ if use_icon:
 PyInstaller.__main__.run(build_args)
 
 print("\n" + "="*50)
-print(f"✅ 빌드 성공! [dist] 폴더 안에 '설교자의서재{VERSION}' 파일을 확인하세요.")
+print(f"✅ 빌드 성공! [dist] 폴더 안에 'SermonArchive_{VERSION}' 파일을 확인하세요.")
 print("="*50)
