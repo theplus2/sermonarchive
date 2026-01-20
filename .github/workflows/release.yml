@@ -106,6 +106,10 @@ jobs:
           
           echo "Found app: $APP_NAME"
           
+          # Ad-hoc signing to prevent "App is damaged" error (Gatekeeper)
+          echo "Signing app with ad-hoc signature..."
+          codesign --force --deep --sign - "$APP_NAME"
+          
           # Create DMG
           create-dmg \
             --volname "$VOL_NAME" \
