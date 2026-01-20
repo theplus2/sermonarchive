@@ -482,7 +482,7 @@ def render_settings(config, save_config_func, APP_DATA_DIR, DB_PATH):
 # 5. 도움말
 def render_help():
     st.title("❓ 도움말 (User Manual)")
-    st.caption("설교자의 서재 v5.1.2 사용 가이드")
+    st.caption("설교자의 서재 v5.1.3 사용 가이드")
     
     # 아이콘 및 마크다운 제거하여 깔끔하게 표시
     # Stremlit의 st.tabs는 마크다운을 일부 지원하지만, 때로 기호가 깨질 수 있음.
@@ -727,6 +727,14 @@ def render_help():
     with tab4:
         st.markdown("""
         ### 📢 업데이트 로그
+        
+        ---
+        
+        #### 🆕 v5.1.3 (2026-01-20) - 설치 파일 개선
+        
+        **🔧 개선 사항**
+        - 🍎 **macOS 설치 최적화**: 맥용 설치 파일이 `.dmg` 포맷으로 제공되어 설치가 더욱 쉬워졌습니다.
+        - 📦 **파일명 변경**: 다운로드 시 헷갈리지 않게 파일명에 버전 정보가 명시됩니다. (예: `sermon_archive_v5.1.3.dmg`)
         
         ---
         

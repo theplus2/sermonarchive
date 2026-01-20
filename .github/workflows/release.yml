@@ -18,7 +18,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
+          python-version: '3.10'
           
       - name: Install dependencies
         run: |
@@ -29,6 +29,12 @@ jobs:
       - name: Build with PyInstaller
         run: python build.py
         
+      - name: Rename Artifact
+        run: |
+          cd dist
+          # PowerShell command to rename
+          Get-ChildItem *.exe | Rename-Item -NewName "sermon_archive_${{ github.ref_name }}.exe"
+          
       - name: Upload Windows Artifact
         uses: actions/upload-artifact@v4
         with:
@@ -43,50 +49,62 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
+          python-version: '3.10'
           
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           pip install pyinstaller
 
-      - name: Generate macOS Icon
+      - name: Install create-dmg
         run: |
-          # Create iconset folder
-          mkdir icon.iconset
-          # Generate various sizes from icon.png (256x256 source)
-          sips -z 16 16     icon.png --out icon.iconset/icon_16x16.png
-          sips -z 32 32     icon.png --out icon.iconset/icon_16x16@2x.png
-          sips -z 32 32     icon.png --out icon.iconset/icon_32x32.png
-          sips -z 64 64     icon.png --out icon.iconset/icon_32x32@2x.png
-          sips -z 128 128   icon.png --out icon.iconset/icon_128x128.png
-          sips -z 256 256   icon.png --out icon.iconset/icon_128x128@2x.png
-          sips -z 256 256   icon.png --out icon.iconset/icon_256x256.png
-          sips -z 512 512   icon.png --out icon.iconset/icon_256x256@2x.png
-          sips -z 512 512   icon.png --out icon.iconset/icon_512x512.png
-          # Convert iconset to icns
-          iconutil -c icns icon.iconset
-          
+          brew install create-dmg
+
       - name: Build with PyInstaller
-        run: python build.py
-        
-      - name: Move App Bundle to dist folder
         run: |
-          cd dist
-          zip -r sermon_archive_v5.0.5_mac.zip .
+          python build.py
+
+      - name: Create DMG
+        run: |
+          # Define variables
+          VOL_NAME="SermonLibrary_${{ github.ref_name }}"
+          DMG_NAME="sermon_archive_${{ github.ref_name }}.dmg"
+          APP_NAME_GLOB="*.app"
           
+          # Find the app name (since version is inside build.py, we might need to find it dynamically or assume it's created correctly)
+          cd dist
+          APP_NAME=$(ls -d *.app | head -n 1)
+          
+          if [ -z "$APP_NAME" ]; then
+            echo "Error: No .app found in dist/"
+            exit 1
+          fi
+          
+          echo "Found app: $APP_NAME"
+          
+          # Create DMG
+          create-dmg \
+            --volname "$VOL_NAME" \
+            --volicon "../icon.icns" \
+            --window-pos 200 120 \
+            --window-size 800 400 \
+            --icon-size 100 \
+            --icon "$APP_NAME" 200 190 \
+            --hide-extension "$APP_NAME" \
+            --app-drop-link 600 185 \
+            "$DMG_NAME" \
+            "$APP_NAME"
+
       - name: Upload macOS Artifact
         uses: actions/upload-artifact@v4
         with:
           name: macos-executable
-          path: dist/*.zip
+          path: dist/*.dmg
 
   release:
     needs: [build-windows, build-macos]
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - uses: actions/checkout@v4
       
@@ -107,7 +125,7 @@ jobs:
         with:
           files: |
             windows-dist/*.exe
-            macos-dist/*.zip
+            macos-dist/*.dmg
           draft: false
           prerelease: false
           generate_release_notes: true
