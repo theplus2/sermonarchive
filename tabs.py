@@ -482,7 +482,7 @@ def render_settings(config, save_config_func, APP_DATA_DIR, DB_PATH):
 # 5. 도움말
 def render_help():
     st.title("❓ 도움말 (User Manual)")
-    st.caption("설교자의 서재 v5.1.3 사용 가이드")
+    st.caption("설교자의 서재 v5.1.4 사용 가이드")
     
     # 아이콘 및 마크다운 제거하여 깔끔하게 표시
     # Stremlit의 st.tabs는 마크다운을 일부 지원하지만, 때로 기호가 깨질 수 있음.
@@ -727,6 +727,13 @@ def render_help():
     with tab4:
         st.markdown("""
         ### 📢 업데이트 로그
+        
+        ---
+        
+        #### 🆕 v5.1.4 (2026-01-20) - macOS 빌드 안정화
+        
+        **🔧 개선 사항**
+        - 🍎 **아이콘 생성 방식 개선**: macOS 빌드 시 아이콘 포맷 오류를 방지하기 위해 아이콘 생성 프로세스를 개선했습니다.
         
         ---
         

@@ -48,3 +48,9 @@
     - **통합 워크플로우**: `release.yml`로 빌드 및 배포 프로세스 통합.
     - **macOS DMG**: `.zip` 대신 `.dmg` 설치 파일 생성 보장.
     - **파일명 규칙**: `sermon_archive_v5.1.3.exe` 및 `sermon_archive_v5.1.3.dmg`로 명확한 버전 명시.
+
+---
+
+### v5.1.4 추가 업데이트 (2026-01-20)
+- **macOS 빌드 오류 수정**:
+    - **Icon Format**: PyInstaller가 처리하지 못하는 아이콘 문제를 해결하기 위해 빌드 서버(Runner)에서 `icon.png`로부터 유효한 `.icns` 파일을 직접 생성(Regenerate)하도록 워크플로우를 수정했습니다.
