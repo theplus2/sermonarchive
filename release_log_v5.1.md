@@ -10,60 +10,40 @@
 ## 2. 주요 변경 사항
 
 ### 2.1 HWPX 파일 포맷 지원 기능 추가
-- **구현 방식**: 외부 라이브러리 없이 파이썬 표준 라이브러리인 `zipfile`과 `xml.etree.ElementTree`만을 사용하여 구현했습니다. 이는 프로그램의 용량을 최소화하고 호환성을 극대화하기 위함입니다.
+- **구현 방식**: 외부 라이브러리 없이 파이썬 표준 라이브러리인 `zipfile`과 `xml.etree.ElementTree`만을 사용하여 구현했습니다.
 - **핵심 파일 수정**: `processor.py`
-    - `extract_text_from_hwpx(file_path)` 함수 신규 작성: `.hwpx` 파일의 내부 구조(ZIP)에 접근하여 본문 XML(`Contents/section*.xml`)에서 텍스트를 파싱합니다.
-    - `_process_single_file()` 함수 수정: 파일 확장자가 `.hwpx`일 경우 새로 만든 추출 함수를 호출하도록 분기 처리했습니다.
-    - `sync_files()` 함수 수정: 파일 검색 필터(`glob`)에 `.hwpx` 확장자를 추가하여 동기화 대상에 포함시켰습니다.
 
 ### 2.2 버전 업데이트
-- **대상 파일**:
-    - `app.py`: 메인 화면 타이틀 및 설정 (`v5.0.5` -> `v5.1`)
-    - `tabs.py`: 도움말 탭의 버전 표기 (`v5.0.5` -> `v5.1`)
-    - `build.py`: 빌드 스크립트 내 버전 변수 (`v5.0.5` -> `v5.1`)
+- `app.py`, `tabs.py`, `build.py` 전체 동기화
 
 ## 3. 검증 (Verification)
-- **단위 테스트**: `test_hwpx.py` 스크립트를 작성하여 실제 `.hwpx` 샘플 파일(`2019 목사고시 설교문-윤영천 전도사.hwpx`)로부터 텍스트가 정상적으로 추출되는지 검증했습니다.
-- **통합 테스트**: Streamlit 앱을 실행하여 사용자가 직접 파일 동기화를 시도하고, 검색 기능이 작동하는지 확인했습니다.
+- `test_hwpx.py` 스크립트로 HWPX 텍스트 추출 검증
+- Streamlit 앱 통합 테스트 완료
 
 ## 4. 배포 (Deployment)
-- **Git 태그**: `v5.1`
-- **커밋 메시지**: "v5.1: HWPX 파일 포맷 지원 추가"
-- **원격 저장소**: GitHub Main 브랜치에 푸시 완료
-
-## 5. 특이 사항
-- HWPX는 ZIP 포맷이므로 별도의 `olefile`이나 `hwp5` 라이브러리가 필요 없어 처리가 간편했습니다.
-- 맥(macOS)과 윈도우(Windows) 모두 동일한 파이썬 코드로 동작하므로 별도의 OS별 분기 처리가 필요 없었습니다.
+- GitHub Main 브랜치 푸시 완료
 
 ---
 
-### v5.1.2 추가 업데이트 (2026-01-20)
-- **macOS DMG 지원**: GitHub Actions를 통해 macOS용 설치 파일(.dmg) 자동 빌드 워크플로우를 추가했습니다.
-- **버전 동기화**: `app.py`, `build.py`, `tabs.py`의 버전을 v5.1.2로 통일했습니다.
+### v5.1.2 ~ v5.1.8 업데이트 (2026-01-20)
+- **macOS DMG 지원 시도**: create-dmg, hdiutil, codesign 등 다양한 방법으로 DMG 생성 시도
+- **문제점**: GitHub Actions Runner에서 `codesign` 명령어 실행 시 `Bus error: 10` 발생
+- **원인 추정**: Runner 환경의 한글 파일명 처리 또는 서명 관련 시스템 제한
 
 ---
 
-### v5.1.3 추가 업데이트 (2026-01-20)
-- **설치 파일 개선**:
-    - **통합 워크플로우**: `release.yml`로 빌드 및 배포 프로세스 통합.
-    - **macOS DMG**: `.zip` 대신 `.dmg` 설치 파일 생성 보장.
-    - **파일명 규칙**: `sermon_archive_v5.1.3.exe` 및 `sermon_archive_v5.1.3.dmg`로 명확한 버전 명시.
+### v5.1.9 업데이트 (2026-01-20) - **macOS ZIP 배포 전환**
 
----
+**결론**: DMG 생성이 지속적으로 실패하여 **ZIP 배포 방식으로 전환**했습니다.
 
-### v5.1.4 추가 업데이트 (2026-01-20)
-- **macOS 빌드 오류 수정**:
-    - **Icon Format**: PyInstaller가 처리하지 못하는 아이콘 문제를 해결하기 위해 빌드 서버(Runner)에서 `icon.png`로부터 유효한 `.icns` 파일을 직접 생성(Regenerate)하도록 워크플로우를 수정했습니다.
+**변경 사항**:
+- `release.yml`: DMG 생성 로직 제거, ZIP 압축으로 대체
+- codesign 단계 제거 (Bus error 원인)
+- 릴리즈 자산: `sermon_archive_v5.1.9.exe` (Windows), `sermon_archive_v5.1.9_mac.zip` (macOS)
 
----
-
-### v5.1.5 추가 업데이트 (2026-01-20)
-- **macOS Gatekeeper 대응**:
-    - **Ad-hoc Signing**: "앱이 손상되었기 때문에 열 수 없습니다" 에러를 완화하기 위해 빌드 과정에 `codesign` 단계를 추가했습니다.
-    - 참고: 이 조치 후에도 처음 실행 시 "확인되지 않은 개발자가 배포했기 때문에..." 경고가 뜰 수 있으며, 이는 마우스 우클릭 > '열기'로 해결 가능합니다.
-
----
-
-### v5.1.6 추가 업데이트 (2026-01-20)
-- **macOS 빌드 오류 수정 (Bus Error)**:
-    - **영문 파일명 전환**: `codesign` 명령어가 한글 파일명 처리 중 충돌(`Bus error: 10`)하는 현상을 방지하기 위해, 서명 및 DMG 생성 단계에서 앱 파일명을 영문(`SermonArchive.app`)으로 변경 처리했습니다.
+**macOS 사용자 설치 방법**:
+1. `sermon_archive_vX.X.X_mac.zip` 다운로드
+2. 더블클릭으로 압축 해제 (자동)
+3. `.app` 파일을 Applications(응용 프로그램) 폴더로 드래그
+4. 처음 실행 시: **마우스 우클릭 > [열기]** 클릭 (Gatekeeper 우회)
+5. 그래도 안 되면 터미널에서: `sudo xattr -cr /Applications/앱이름.app`

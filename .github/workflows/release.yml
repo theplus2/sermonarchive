@@ -86,44 +86,33 @@ jobs:
         run: |
           python build.py
 
-      - name: Create DMG
+      - name: Create ZIP
         run: |
           # Define variables
-          VOL_NAME="SermonLibrary_${{ github.ref_name }}"
-          DMG_NAME="sermon_archive_${{ github.ref_name }}.dmg"
-          APP_NAME_GLOB="*.app"
+          ZIP_NAME="sermon_archive_${{ github.ref_name }}_mac.zip"
           
-          # Find the app name
+          # Find the app
           cd dist
-          ORIGINAL_APP_NAME=$(ls -d *.app | head -n 1)
+          APP_NAME=$(ls -d *.app | head -n 1)
           
-          if [ -z "$ORIGINAL_APP_NAME" ]; then
+          if [ -z "$APP_NAME" ]; then
             echo "Error: No .app found in dist/"
             exit 1
           fi
           
-          echo "Found app: $ORIGINAL_APP_NAME"
+          echo "Found app: $APP_NAME"
           
-          # Rename to ASCII to prevent 'Bus error: 10' during codesign with Korean characters
-          APP_NAME="SermonArchive.app"
-          mv "$ORIGINAL_APP_NAME" "$APP_NAME"
-          echo "Renamed to: $APP_NAME"
+          # Create ZIP (simple and reliable)
+          zip -r "$ZIP_NAME" "$APP_NAME"
           
-          # Ad-hoc signing to prevent "App is damaged" error (Gatekeeper)
-          echo "Signing app with ad-hoc signature..."
-          codesign --force --deep --sign - "$APP_NAME"
-          
-          # Create DMG using native hdiutil (most reliable method)
-          hdiutil create -volname "$VOL_NAME" -srcfolder "$APP_NAME" -ov -format UDZO "$DMG_NAME"
-          
-          echo "DMG created: $DMG_NAME"
-          ls -la *.dmg
+          echo "ZIP created: $ZIP_NAME"
+          ls -la *.zip
 
       - name: Upload macOS Artifact
         uses: actions/upload-artifact@v4
         with:
           name: macos-executable
-          path: dist/*.dmg
+          path: dist/*.zip
 
   release:
     needs: [build-windows, build-macos]
@@ -148,7 +137,7 @@ jobs:
         with:
           files: |
             windows-dist/*.exe
-            macos-dist/*.dmg
+            macos-dist/*.zip
           draft: false
           prerelease: false
           generate_release_notes: true
