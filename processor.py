@@ -105,6 +105,52 @@ def extract_text_from_hwp(file_path):
         pass
     
     return ""
+
+def extract_text_from_hwpx(file_path):
+    """
+    HWPX 파일에서 텍스트를 추출합니다.
+    
+    HWPX는 ZIP 압축 기반의 한글 개방형 문서 포맷입니다.
+    Contents/sectionN.xml 파일들에서 텍스트를 추출합니다.
+    
+    Returns:
+        str: 추출된 텍스트 (실패시 빈 문자열)
+    """
+    import zipfile
+    import xml.etree.ElementTree as ET
+    
+    try:
+        with zipfile.ZipFile(file_path, 'r') as zf:
+            text_parts = []
+            
+            # Contents 디렉토리 내의 section*.xml 파일들 찾기
+            section_files = sorted([
+                name for name in zf.namelist()
+                if name.startswith('Contents/section') and name.endswith('.xml')
+            ])
+            
+            for section_file in section_files:
+                try:
+                    with zf.open(section_file) as f:
+                        xml_content = f.read()
+                        root = ET.fromstring(xml_content)
+                        
+                        # 모든 네임스페이스의 텍스트 요소 추출
+                        # HWPX는 hp: 네임스페이스를 사용하지만 버전에 따라 다를 수 있음
+                        for elem in root.iter():
+                            # 태그 이름이 't'로 끝나는 요소 (hp:t, hc:t 등)
+                            if elem.tag.endswith('}t') or elem.tag == 't':
+                                if elem.text:
+                                    text_parts.append(elem.text)
+                except Exception:
+                    continue
+            
+            return '\n'.join(text_parts).strip()
+            
+    except Exception:
+        pass
+    
+    return ""
  
 
 def parse_date_from_filename(filename):
@@ -258,6 +304,8 @@ def _process_single_file(file_path):
         content = extract_text_from_docx(file_path)
     elif file_path.lower().endswith(".hwp"):
         content = extract_text_from_hwp(file_path)
+    elif file_path.lower().endswith(".hwpx"):
+        content = extract_text_from_hwpx(file_path)
     elif file_path.lower().endswith(".txt"):
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
@@ -282,7 +330,7 @@ def sync_files(target_folder, progress_callback=None, status_callback=None):
     c.execute("PRAGMA journal_mode=WAL;")  # WAL 모드 활성화
 
     files = glob.glob(os.path.join(target_folder, "**/*.*"), recursive=True)
-    files = [f for f in files if f.lower().endswith(('.docx', '.hwp', '.txt'))]
+    files = [f for f in files if f.lower().endswith(('.docx', '.hwp', '.hwpx', '.txt'))]
     
     # 현재 폴더에 있는 파일명 목록
     current_filenames = set(os.path.basename(f) for f in files)
