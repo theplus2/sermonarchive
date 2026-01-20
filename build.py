@@ -11,7 +11,7 @@ try:
 except:
     pass
 
-VERSION = "v5.1.6"
+VERSION = "v5.1.7"
 print(f"🚀 빌드 준비 중... ({VERSION}) 기존 빌드 폴더를 정리합니다.")
 
 # 1. 기존 빌드 잔여물 깨끗이 삭제
