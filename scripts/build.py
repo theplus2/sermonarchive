@@ -11,8 +11,13 @@ try:
 except:
     pass
 
-VERSION = "v5.2.0"
+VERSION = "v5.2.5"
 print(f"🚀 빌드 준비 중... ({VERSION}) 기존 빌드 폴더를 정리합니다.")
+
+# 프로젝트 루트 디렉토리 설정 (scripts 폴더 상위)
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+os.chdir(PROJECT_ROOT)
+print(f"📂 작업 경로: {PROJECT_ROOT}")
 
 # 1. 기존 빌드 잔여물 깨끗이 삭제
 if os.path.exists("dist"):
@@ -28,32 +33,29 @@ for f in os.listdir('.'):
         except: pass
 
 # 2. 필수 파일 확인
-current_dir = os.path.dirname(os.path.abspath(__file__))
+assets_dir = os.path.join(PROJECT_ROOT, "assets")
+scripts_dir = os.path.join(PROJECT_ROOT, "scripts")
 
-# 아이콘 설정 (맥은 빌드 에러 방지를 위해 일단 제외하거나 .icns 확인이 필요함)
-# 현재 맥 빌드에서 .icns 포맷 에러가 발생하므로, 윈도우만 아이콘을 적용합니다.
+# 아이콘 설정
 use_icon = False
 icon_path = ""
 
 if platform.system() == "Windows":
     icon_file = "icon.ico"
-    icon_path = os.path.join(current_dir, icon_file)
+    icon_path = os.path.join(assets_dir, icon_file)
     if os.path.exists(icon_path):
         use_icon = True
 elif platform.system() == "Darwin":
     icon_file = "icon.icns"
-    icon_path = os.path.join(current_dir, icon_file)
+    icon_path = os.path.join(assets_dir, icon_file)
     if os.path.exists(icon_path):
        use_icon = True
 
-required_files = ['run.py', 'app.py', 'tabs.py', 'styles.py', 'processor.py']
-if use_icon:
-    required_files.append(icon_file)
-
-for f in required_files:
-    if not os.path.exists(f):
-        print(f"❌ 오류: '{f}' 파일이 없습니다! 폴더를 확인해주세요.")
-        exit()
+# 진입점 파일 확인
+run_script = os.path.join(scripts_dir, "run.py")
+if not os.path.exists(run_script):
+    print(f"❌ 오류: 진입점 파일 '{run_script}'이 없습니다!")
+    exit(1)
 
 print(f"📦 PyInstaller 공장 가동! {VERSION} 버전으로 포장합니다...")
 
@@ -62,17 +64,16 @@ sep = ';' if platform.system() == "Windows" else ':'
 
 # 기본 옵션 리스트 생성
 build_args = [
-    'run.py',                       # 1. 실행 진입점
-    f'--name=SermonArchive_{VERSION}',  # 2. 파일 이름 (영문으로 변경 - macOS 호환성)
+    run_script,                     # 1. 실행 진입점 (scripts/run.py)
+    f'--name=SermonArchive_{VERSION}',  # 2. 파일 이름
     '--onefile',                    # 4. 파일 하나로
     '--clean',                      # 5. 캐시 초기화
     '--noconsole',                  # 6. 콘솔창 숨기기
     
-    # 소스 코드 포함
+    # 소스 코드 포함 (src 폴더 통째로 추가)
+    f'--add-data=src{sep}src',
     f'--add-data=app.py{sep}.',
-    f'--add-data=tabs.py{sep}.',
-    f'--add-data=styles.py{sep}.',
-    f'--add-data=processor.py{sep}.',
+    f'--add-data=config.json{sep}.', # config.json도 필요하다면
     
     # 숨겨진 라이브러리 명시
     '--hidden-import=streamlit',
@@ -85,7 +86,10 @@ build_args = [
     '--hidden-import=tkinter.filedialog',
     '--hidden-import=PIL',
     '--hidden-import=hwp5',             
-    '--hidden-import=olefile',          
+    '--hidden-import=olefile',
+    '--hidden-import=pdfminer',
+    '--hidden-import=pdfminer.high_level',
+    '--hidden-import=pdfminer.layout',
     
     # 라이브러리 수집
     '--collect-all=streamlit',
@@ -95,11 +99,14 @@ build_args = [
     '--collect-all=tkinter',            
     '--collect-all=matplotlib',
     '--collect-all=docx',
+    '--collect-all=pdfminer',
 ]
 
-# 아이콘 옵션 추가 (사용 가능한 경우에만)
+# 아이콘 옵션 추가
 if use_icon:
     build_args.insert(2, f'--icon={icon_path}')
+else:
+    print("⚠️ 경고: 아이콘 파일을 찾을 수 없어 기본 아이콘을 사용합니다.")
 
 # 빌드 실행
 PyInstaller.__main__.run(build_args)
