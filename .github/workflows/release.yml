@@ -27,7 +27,7 @@ jobs:
           pip install pyinstaller
           
       - name: Build with PyInstaller
-        run: python build.py
+        run: python scripts/build.py
         
       - name: Rename Artifact
         run: |
@@ -84,7 +84,7 @@ jobs:
 
       - name: Build with PyInstaller
         run: |
-          python build.py
+          python scripts/build.py
 
       - name: Create ZIP
         run: |

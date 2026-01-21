@@ -45,6 +45,8 @@ def _process_single_file(file_path):
         content = extractors.extract_text_from_hwp(file_path)
     elif file_path.lower().endswith(".hwpx"):
         content = extractors.extract_text_from_hwpx(file_path)
+    elif file_path.lower().endswith(".pdf"):
+        content = extractors.extract_text_from_pdf(file_path)
     elif file_path.lower().endswith(".txt"):
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
@@ -64,7 +66,7 @@ def sync_files(target_folder, db_path, progress_callback=None, status_callback=N
     c.execute("PRAGMA journal_mode=WAL;")
 
     files = glob.glob(os.path.join(target_folder, "**/*.*"), recursive=True)
-    files = [f for f in files if f.lower().endswith(('.docx', '.hwp', '.hwpx', '.txt'))]
+    files = [f for f in files if f.lower().endswith(('.docx', '.hwp', '.hwpx', '.pdf', '.txt'))]
     
     current_filenames = set(os.path.basename(f) for f in files)
     

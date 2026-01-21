@@ -4,6 +4,13 @@ import tempfile
 import sys
 import os
 from docx import Document
+from pdfminer.high_level import extract_text
+
+def extract_text_from_pdf(file_path):
+    try:
+        return extract_text(file_path).strip()
+    except Exception:
+        return ""
 
 def extract_text_from_docx(file_path):
     try:
