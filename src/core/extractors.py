@@ -21,42 +21,48 @@ def _merge_broken_lines(text):
     merged_lines = []
     current_line = ""
     
-    # Sentence ending characters
-    end_chars = ('.', '?', '!', ':', ';', '”', '"', "'")
-    # List item markers
+    # 문장 종결 및 구분을 위한 부호
+    end_chars = ('.', '?', '!', ':', ';', '”', '"', "'", '>', '）', ')')
+    # 목록 마커
     bullets = ('-', '*', '•', '·')
+    # 공백 없이 앞 줄에 붙여야 하는 문장 부호 및 조사
+    sticky_chars = ('.', ',', '!', '?', ':', ';', '”', '"', "'", ')', '}', ']', '>', '）')
+    # 조사가 줄 바꿈으로 인해 분리되는 경우 (주요 조사 예시)
+    particles = ('가', '이', '는', '은', '를', '을', '에', '와', '과', '도', '만', '의', '로', '으로', '고')
     
     for line in lines:
         line = line.strip()
         if not line:
-            # Empty line -> preserve paragraph break
             if current_line:
                 merged_lines.append(current_line)
                 current_line = ""
             merged_lines.append("")
             continue
         
-        # Check if this line is a list item
-        # Safe check for index access
         is_list_item = (len(line) > 0 and line[0].isdigit()) or line.startswith(bullets)
         
         if not current_line:
             current_line = line
         else:
-            # Check if previous line ended with punctuation OR current line is list item
+            # 1. 이전 줄이 문장 종결 부호로 끝나거나, 현재 줄이 목록 형태인 경우 -> 줄 바꿈 유지
             if current_line.endswith(end_chars) or is_list_item:
-                # Ends with punctuation -> legitimate newline (probably)
                 merged_lines.append(current_line)
                 current_line = line
+            # 2. 현재 줄이 문장 부호(sticky_chars)나 특정 조사로 시작하는 경우 -> 공백 없이 붙임
+            elif line[0] in sticky_chars or (len(line) == 1 and line in particles):
+                current_line += line
+            # 3. 그 외의 경우 (단어 중간 줄 바꿈 등) -> 공백 하나 넣고 합침
             else:
-                # Doesn't end with punctuation -> probably hard wrap -> merge
-                # Use space to join
                 current_line += " " + line
                 
     if current_line:
         merged_lines.append(current_line)
         
-    return '\n'.join(merged_lines)
+    cleaned_text = '\n'.join(merged_lines)
+    # 중복 공백 제거 로직 추가
+    import re
+    cleaned_text = re.sub(r'[ \t]{2,}', ' ', cleaned_text)
+    return cleaned_text
 
 def extract_text_from_docx(file_path):
     try:
