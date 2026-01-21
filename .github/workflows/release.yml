@@ -77,9 +77,12 @@ jobs:
           # Convert iconset to icns
           iconutil -c icns icon.iconset
           
+          # [Fix] Overwrite the repo's icon with the generated one to ensure validity
+          mv icon.icns assets/icon.icns
+          
           # Verify generated icon
           echo "Verifying icon.icns..."
-          ls -l icon.icns
+          ls -l assets/icon.icns
           sips -i icon.icns
 
       - name: Build with PyInstaller

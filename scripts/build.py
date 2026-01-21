@@ -53,9 +53,12 @@ elif platform.system() == "Darwin":
 
 # 진입점 파일 확인
 run_script = os.path.join(scripts_dir, "run.py")
-if not os.path.exists(run_script):
-    print(f"❌ 오류: 진입점 파일 '{run_script}'이 없습니다!")
-    exit(1)
+required_files = [run_script] # Add other essential files here if needed, e.g., os.path.join(PROJECT_ROOT, "app.py")
+
+for f in required_files:
+    if not os.path.exists(f):
+        print(f"❌ 오류: 필수 파일 '{f}'이 없습니다! 폴더 구조(src, assets)를 확인해주세요.")
+        exit(1)
 
 print(f"📦 PyInstaller 공장 가동! {VERSION} 버전으로 포장합니다...")
 
