@@ -12,6 +12,17 @@ macOS 아이콘 빌드 오류 수정\nCI/CD 워크플로우 개선
 
 # Changelog
 
+## [5.3.0] - 2026-01-21
+
+### Added
+- Switched PDF extraction engine to PyMuPDF (fitz) for significantly faster and more accurate text extraction.
+- Implemented custom coordinate-based word sorting and gap-aware merging to fix punctuation and particle spacing issues in PDF files.
+
+### Changed
+- Updated application version to v5.3.0 across all components.
+- Cleaned up experimental scripts and temporary test files.
+
+
 ## [v5.2.5] - 2026-01-21
 
 PDF 파일 포맷 지원 추가\n자동화 릴리즈 스크립트 추가

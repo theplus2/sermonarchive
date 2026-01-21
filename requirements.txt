@@ -9,3 +9,4 @@ olefile
 altair
 watchdog
 pdfminer.six
+pymupdf

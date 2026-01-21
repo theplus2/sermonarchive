@@ -4,12 +4,76 @@ import tempfile
 import sys
 import os
 from docx import Document
-from pdfminer.high_level import extract_text
+import fitz  # PyMuPDF
 
 def extract_text_from_pdf(file_path):
     try:
-        text = extract_text(file_path).strip()
-        return _merge_broken_lines(text)
+        doc = fitz.open(file_path)
+        full_text = []
+        
+        for page in doc:
+            # 단어 단위로 좌표와 함께 추출: (x0, y0, x1, y1, "word", block_no, line_no, word_no)
+            words = page.get_text("words")
+            
+            # Y 좌표를 기준으로 행(Line) 그룹화
+            # y0가 비슷한 것끼리 묶음 (오차 범위 3~5픽셀)
+            lines = {}  # key: representative_y, value: list of words
+            
+            for w in words:
+                y0 = w[1]
+                # 기존 라인 중 y0 차이가 5 이하인 것이 있는지 확인
+                found_line = False
+                for line_y in lines:
+                    if abs(line_y - y0) < 5:
+                        lines[line_y].append(w)
+                        found_line = True
+                        break
+                
+                if not found_line:
+                    lines[y0] = [w]
+            
+            # Y 좌표 순으로 라인 정렬 (위에서 아래로)
+            sorted_y = sorted(lines.keys())
+            
+            page_text = ""
+            for y in sorted_y:
+                # 라인 내에서 X 좌표 순으로 단어 정렬 (왼쪽에서 오른쪽으로)
+                line_words = sorted(lines[y], key=lambda x: x[0])
+                
+                # 단어들을 이어 붙일 때 간격 확인
+                line_str = ""
+                if not line_words:
+                    continue
+                    
+                line_str = line_words[0][4]
+                prev_x1 = line_words[0][2]
+                
+                for i in range(1, len(line_words)):
+                    curr_word = line_words[i]
+                    curr_x0 = curr_word[0]
+                    word_text = curr_word[4]
+                    
+                    # 두 단어 사이의 간격 계산
+                    gap = curr_x0 - prev_x1
+                    
+                    # 간격이 좁으면(예: 3px 미만) 붙이고, 넓으면 띄움
+                    # 문장 부호나 조사가 분리된 경우를 해결하기 위함
+                    if gap < 3.0: 
+                        line_str += word_text
+                    else:
+                        line_str += " " + word_text
+                    
+                    prev_x1 = curr_word[2]
+                
+                page_text += line_str + "\n"
+            
+            full_text.append(page_text)
+            
+        # 전체 텍스트 병합 후 최종적으로 줄바꿈 정제 함수 호출
+        # 사용자 정의 정렬로 인해 순서는 맞겠지만, 줄바꿈은 여전히 존재하므로 병합이 필요함.
+        raw_text = "\n".join(full_text)
+        return _merge_broken_lines(raw_text)
+
     except Exception:
         return ""
 
