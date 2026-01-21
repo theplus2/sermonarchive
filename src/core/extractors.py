@@ -8,9 +8,55 @@ from pdfminer.high_level import extract_text
 
 def extract_text_from_pdf(file_path):
     try:
-        return extract_text(file_path).strip()
+        text = extract_text(file_path).strip()
+        return _merge_broken_lines(text)
     except Exception:
         return ""
+
+def _merge_broken_lines(text):
+    if not text:
+        return ""
+        
+    lines = text.split('\n')
+    merged_lines = []
+    current_line = ""
+    
+    # Sentence ending characters
+    end_chars = ('.', '?', '!', ':', ';', '”', '"', "'")
+    # List item markers
+    bullets = ('-', '*', '•', '·')
+    
+    for line in lines:
+        line = line.strip()
+        if not line:
+            # Empty line -> preserve paragraph break
+            if current_line:
+                merged_lines.append(current_line)
+                current_line = ""
+            merged_lines.append("")
+            continue
+        
+        # Check if this line is a list item
+        # Safe check for index access
+        is_list_item = (len(line) > 0 and line[0].isdigit()) or line.startswith(bullets)
+        
+        if not current_line:
+            current_line = line
+        else:
+            # Check if previous line ended with punctuation OR current line is list item
+            if current_line.endswith(end_chars) or is_list_item:
+                # Ends with punctuation -> legitimate newline (probably)
+                merged_lines.append(current_line)
+                current_line = line
+            else:
+                # Doesn't end with punctuation -> probably hard wrap -> merge
+                # Use space to join
+                current_line += " " + line
+                
+    if current_line:
+        merged_lines.append(current_line)
+        
+    return '\n'.join(merged_lines)
 
 def extract_text_from_docx(file_path):
     try:
