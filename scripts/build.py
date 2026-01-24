@@ -11,7 +11,7 @@ try:
 except:
     pass
 
-VERSION = "v5.2.5"
+VERSION = "v5.3.1"
 print(f"🚀 빌드 준비 중... ({VERSION}) 기존 빌드 폴더를 정리합니다.")
 
 # 프로젝트 루트 디렉토리 설정 (scripts 폴더 상위)
@@ -90,9 +90,8 @@ build_args = [
     '--hidden-import=PIL',
     '--hidden-import=hwp5',             
     '--hidden-import=olefile',
-    '--hidden-import=pdfminer',
-    '--hidden-import=pdfminer.high_level',
-    '--hidden-import=pdfminer.layout',
+    '--hidden-import=fitz',             # PyMuPDF
+    '--hidden-import=pymupdf',          # PyMuPDF 대체 이름
     
     # 라이브러리 수집
     '--collect-all=streamlit',
@@ -102,7 +101,7 @@ build_args = [
     '--collect-all=tkinter',            
     '--collect-all=matplotlib',
     '--collect-all=docx',
-    '--collect-all=pdfminer',
+    '--collect-all=pymupdf',            # PyMuPDF 전체 수집
 ]
 
 # 아이콘 옵션 추가

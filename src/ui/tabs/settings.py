@@ -4,10 +4,7 @@ import time
 import subprocess
 import tkinter as tk
 from tkinter import filedialog
-try:
-    from src.core import processor
-except ImportError:
-    import processor
+from src.core import processor
 
 def render_settings(config, save_config_func, APP_DATA_DIR, DB_PATH):
     st.title("⚙️ 설정 및 동기화")

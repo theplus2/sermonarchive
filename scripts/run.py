@@ -9,7 +9,12 @@ def resolve_path(path):
     if getattr(sys, "frozen", False):
         basedir = sys._MEIPASS
     else:
-        basedir = os.path.dirname(__file__)
+        basedir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    
+    # [중요] 모듈 검색 경로에 베이스 디렉토리 추가
+    if basedir not in sys.path:
+        sys.path.insert(0, basedir)
+        
     return os.path.join(basedir, path)
 
 def open_browser():

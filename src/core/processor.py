@@ -3,13 +3,8 @@ import os
 import glob
 from concurrent.futures import ThreadPoolExecutor, as_completed
 # 새롭게 분리된 모듈 임포트
-try:
-    from src.core import extractors
-    from src.utils import helpers
-except ImportError:
-    # 실행 환경에 따라 상대 경로가 다를 수 있으므로 폴백 처리
-    import extractors
-    import helpers
+from src.core import extractors
+from src.utils import helpers
 
 def init_db(db_path):
     conn = sqlite3.connect(db_path, timeout=30)

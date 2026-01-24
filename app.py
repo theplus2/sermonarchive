@@ -6,22 +6,20 @@ import time
 import platform
 import streamlit.components.v1 as components
 
+# 프로젝트 루트를 sys.path에 명시적으로 추가 (src 패키지 인식 보장)
+current_dir = os.path.dirname(os.path.abspath(__file__))
+if current_dir not in sys.path:
+    sys.path.insert(0, current_dir)
+
 # 새롭게 분리된 모듈 임포트
-try:
-    from src.core import processor
-    from src.ui import styles
-    from src.ui.tabs import workspace, chronicle, statistics, settings, help as help_tab
-except ImportError:
-    # 빌드 환경 등을 위해 sys.path 추가 또는 상대 경로 처리
-    sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
-    from core import processor
-    from ui import styles
-    from ui.tabs import workspace, chronicle, statistics, settings, help as help_tab
+from src.core import processor
+from src.ui import styles
+from src.ui.tabs import workspace, chronicle, statistics, settings, help as help_tab
 
 # ==========================================
 # ⚙️ 설정 및 초기화
 # ==========================================
-st.set_page_config(layout="wide", page_title="설교자의 서재 v5.3.0")
+st.set_page_config(layout="wide", page_title="설교자의 서재 v5.3.1")
 
 system_os = platform.system()
 
@@ -119,7 +117,7 @@ def render_footer():
 
 if st.session_state['mode'] == 'main_menu':
     styles.apply_home_styles()
-    st.title("✠️ 설교자의 서재 v5.3.0")
+    st.title("✠️ 설교자의 서재 v5.3.1")
     st.caption("Developed by **잠실한빛교회 윤영천 목사** (theplus2@gmail.com)")
     st.divider()
     

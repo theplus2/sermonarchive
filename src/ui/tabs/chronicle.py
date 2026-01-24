@@ -1,10 +1,7 @@
 import streamlit as st
 import pandas as pd
 from io import BytesIO
-try:
-    from src.core import processor
-except ImportError:
-    import processor
+from src.core import processor
 
 def render_chronicle(DB_PATH):
     st.title("📅 설교 연대기")
