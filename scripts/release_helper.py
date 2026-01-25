@@ -38,6 +38,30 @@ def update_changelog(changelog_path, new_version, log_content):
         f.write(new_content)
     print(f"Updated {changelog_path}")
 
+def update_help_py(help_path, new_version, log_content):
+    with open(help_path, 'r', encoding='utf-8') as f:
+        content = f.read()
+    
+    # 1. 버전 캡션 업데이트
+    content = re.sub(r'st\.caption\("설교자의 서재 v\d+\.\d+\.\d+ 사용 가이드"\)', 
+                    f'st.caption("설교자의 서재 {new_version} 사용 가이드")', content)
+    
+    # 2. 업데이트 로그 추가 (#### 🆕 바로 아래에 삽입)
+    date_str = datetime.now().strftime("%Y-%m-%d")
+    new_log_entry = f"        #### 🆕 {new_version} ({date_str}) - 자동 업데이트\n\n        **🔧 개선 사항**\n"
+    for line in log_content.split('\n'):
+        if line.strip():
+            new_log_entry += f"        - {line.strip()}\n"
+    new_log_entry += "\n        ---\n"
+    
+    marker = '### 📢 업데이트 로그\n        \n        ---'
+    if marker in content:
+        content = content.replace(marker, f"{marker}\n        \n{new_log_entry}")
+    
+    with open(help_path, 'w', encoding='utf-8') as f:
+        f.write(content)
+    print(f"Updated {help_path}")
+
 def run_git_commands(new_version):
     commands = [
         ["git", "add", "."],
@@ -110,6 +134,10 @@ def main():
     
     update_app_version(app_path, current_version, new_version)
     update_changelog(changelog_path, new_version, log_content)
+    
+    help_path = os.path.join(base_dir, "src", "ui", "tabs", "help.py")
+    if os.path.exists(help_path):
+        update_help_py(help_path, new_version, log_content)
     
     if args.yes:
         confirm = 'y'

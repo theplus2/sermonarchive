@@ -19,7 +19,7 @@ from src.ui.tabs import workspace, chronicle, statistics, settings, help as help
 # ==========================================
 # ⚙️ 설정 및 초기화
 # ==========================================
-st.set_page_config(layout="wide", page_title="설교자의 서재 v5.3.3")
+st.set_page_config(layout="wide", page_title="설교자의 서재 v5.3.4")
 
 system_os = platform.system()
 
@@ -117,7 +117,7 @@ def render_footer():
 
 if st.session_state['mode'] == 'main_menu':
     styles.apply_home_styles()
-    st.title("✠️ 설교자의 서재 v5.3.3")
+    st.title("✠️ 설교자의 서재 v5.3.4")
     st.caption("Developed by **잠실한빛교회 윤영천 목사** (theplus2@gmail.com)")
     st.divider()
     
