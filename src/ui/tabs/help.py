@@ -2,7 +2,7 @@ import streamlit as st
 
 def render_help():
     st.title("❓ 도움말 (User Manual)")
-    st.caption("설교자의 서재 v5.3.1 사용 가이드")
+    st.caption("설교자의 서재 v5.3.2 사용 가이드")
     
     # 아이콘 및 마크다운 제거하여 깔끔하게 표시
     # Stremlit의 st.tabs는 마크다운을 일부 지원하지만, 때로 기호가 깨질 수 있음.
@@ -20,6 +20,14 @@ def render_help():
     with tab4:
         st.markdown("""
         ### 📢 업데이트 로그
+        
+        ---
+        
+        #### 🆕 v5.3.2 (2026-01-25) - macOS 실행 문제 해결
+        
+        **🔧 개선 사항**
+        - 🍎 **macOS 보안 대응**: "앱이 손상됨" 오류 해결을 위해 Ad-hoc 코드 서명 및 필수 권한 설정을 적용했습니다.
+        - 📦 **DMG 설치 파일**: macOS용 배포 형식을 `.dmg`로 전환하여 설치 편의성을 높였습니다.
         
         ---
         
