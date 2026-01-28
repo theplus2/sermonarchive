@@ -1,9 +1,9 @@
 import streamlit as st
-import pandas as pd
 from io import BytesIO
 from src.core import processor
 
 def render_chronicle(DB_PATH):
+    import pandas as pd
     st.title("📅 설교 연대기")
     rows = processor.get_all_sermons_metadata(DB_PATH)
     if not rows: st.warning("데이터가 없습니다. 설정에서 동기화를 해주세요.")

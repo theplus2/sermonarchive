@@ -19,7 +19,7 @@ from src.ui.tabs import workspace, chronicle, statistics, settings, help as help
 # ==========================================
 # ⚙️ 설정 및 초기화
 # ==========================================
-st.set_page_config(layout="wide", page_title="설교자의 서재 v5.3.4")
+st.set_page_config(layout="wide", page_title="설교자의 서재 v5.3.5")
 
 system_os = platform.system()
 

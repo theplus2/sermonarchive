@@ -1,13 +1,9 @@
-import zipfile
-import xml.etree.ElementTree as ET
-import tempfile
-import sys
 import os
-from docx import Document
-import fitz  # PyMuPDF
+# Lazy imports applied to: zipfile, xml, docx, fitz
 
 def extract_text_from_pdf(file_path):
     try:
+        import fitz  # PyMuPDF
         doc = fitz.open(file_path)
         full_text = []
         
@@ -33,6 +29,7 @@ def extract_text_from_pdf(file_path):
                     lines[y0] = [w]
             
             # Y 좌표 순으로 라인 정렬 (위에서 아래로)
+            # sorted_lines = sorted(lines.items(), key=lambda item: item[0])
             sorted_y = sorted(lines.keys())
             
             page_text = ""
@@ -130,6 +127,7 @@ def _merge_broken_lines(text):
 
 def extract_text_from_docx(file_path):
     try:
+        from docx import Document
         doc = Document(file_path)
         return "\n".join([p.text for p in doc.paragraphs])
     except: return ""
@@ -145,6 +143,8 @@ def extract_text_from_hwp(file_path):
     # 1차 시도: hwp5txt 메인 함수 직접 호출
     try:
         from hwp5.hwp5txt import main as hwp5txt_main
+        import sys
+        import tempfile
         
         with tempfile.NamedTemporaryFile(mode='w', suffix='.txt', delete=False, encoding='utf-8') as tmp:
             tmp_path = tmp.name
@@ -191,6 +191,9 @@ def extract_text_from_hwpx(file_path):
     HWPX 파일에서 텍스트를 추출합니다.
     """
     try:
+        import zipfile
+        import xml.etree.ElementTree as ET
+        
         with zipfile.ZipFile(file_path, 'r') as zf:
             text_parts = []
             section_files = sorted([

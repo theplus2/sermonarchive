@@ -1,3 +1,7 @@
+## [v5.3.5] - 2026-01-28
+
+macOS 최적화: 시작 속도 개선(Lazy Import), 폴더 선택 멈춤 해결(Native Dialog)\nWindows 개선: 폴더 선택 창 순서 수정(TopMost)\n안정성: v5.3.5 릴리즈
+
 ## [v5.3.4] - 2026-01-25
 
 도움말 복구: 유실된 상세 설명 및 FAQ 내용 전체 복원\n자동화 개선: release_helper.py에 도움말 안전 업데이트 로직 추가

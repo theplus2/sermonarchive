@@ -1,5 +1,4 @@
 import streamlit as st
-from wordcloud import WordCloud
 from src.core import processor
 
 BIBLE_ORDER = ["창세기","출애굽기","레위기","민수기","신명기","여호수아","사사기","룻기","사무엘상","사무엘하","열왕기상","열왕기하","역대상","역대하","에스라","느헤미야","에스더","욥기","시편","잠언","전도서","아가","이사야","예레미야","예레미야애가","에스겔","다니엘","호세아","요엘","아모스","오바댜","요나","미가","나훔","하박국","스바냐","학개","스가랴","말라기","마태복음","마가복음","누가복음","요한복음","사도행전","로마서","고린도전서","고린도후서","갈라디아서","에베소서","빌립보서","골로새서","데살로니가전서","데살로니가후서","디모데전서","디모데후서","디도서","빌레몬서","히브리서","야고보서","베드로전서","베드로후서","요한1서","요한2서","요한3서","유다서","요한계시록"]
@@ -156,8 +155,10 @@ def render_statistics(DB_PATH):
             if text:
                 stops = {'은','는','이','가','을','를','의','에','에서','로','으로','과','와','도','합니다','것입니다','있습니다','아니라','그','저','우리','나','너','여러분','할','수','있는','말씀','하나님','예수님','주님','제목','본문','설교','아멘','그리고','그러나','하지만','그런데','때문에','위해','통해','대한','모든','어떤','그래서','것','것이다','이러한','하는','줄','있을','한','수','등','더','그','때'}
                 try:
+                    from wordcloud import WordCloud
                     wc = WordCloud(font_path="C:/Windows/Fonts/malgun.ttf", width=1200, height=400, background_color="white", stopwords=stops, max_words=100).generate(text)
                     st.image(wc.to_array(), use_container_width=True)
                 except:
+                    from wordcloud import WordCloud
                     wc = WordCloud(width=1200, height=400, background_color="white", stopwords=stops, max_words=100).generate(text)
                     st.image(wc.to_array(), use_container_width=True)

@@ -18,16 +18,24 @@ def select_folder():
         return None
 
 def _select_folder_windows():
-    cmd = [
-        "powershell",
-        "-Command",
-        "Add-Type -AssemblyName System.Windows.Forms; $dialog = New-Object System.Windows.Forms.FolderBrowserDialog; $result = $dialog.ShowDialog(); if ($result -eq [System.Windows.Forms.DialogResult]::OK) { Write-Output $dialog.SelectedPath }"
-    ]
     try:
-        result = subprocess.run(cmd, capture_output=True, text=True, check=True)
-        path = result.stdout.strip()
-        return path if path else None
-    except subprocess.CalledProcessError:
+        import tkinter as tk
+        from tkinter import filedialog
+        
+        # Tkinter 루트 윈도우 생성 (숨김 상태)
+        root = tk.Tk()
+        root.withdraw()
+        
+        # 항상 위로 설정 (브라우저 뒤에 숨는 문제 해결)
+        root.wm_attributes('-topmost', 1)
+        
+        # 폴더 선택 대화상자 호출
+        folder_path = filedialog.askdirectory(master=root)
+        
+        # 정리
+        root.destroy()
+        return folder_path
+    except Exception:
         return None
 
 def _select_folder_mac():
