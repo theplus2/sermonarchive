@@ -98,12 +98,13 @@ def save_config(c):
 
 config = load_config()
 
-if 'startup_sync_done' not in st.session_state:
-    target = config.get("target_folder")
-    if target and os.path.exists(target):
-        cnt, msg = processor.sync_files(target, DB_PATH)
-        if cnt > 0: st.toast(f"🎉 새 설교 {cnt}편 업데이트 완료!")
-    st.session_state['startup_sync_done'] = True
+# Start up sync removed for performance
+# if 'startup_sync_done' not in st.session_state:
+#     target = config.get("target_folder")
+#     if target and os.path.exists(target):
+#         cnt, msg = processor.sync_files(target, DB_PATH)
+#         if cnt > 0: st.toast(f"🎉 새 설교 {cnt}편 업데이트 완료!")
+#     st.session_state['startup_sync_done'] = True
 
 if 'mode' not in st.session_state: st.session_state['mode'] = 'main_menu'
 

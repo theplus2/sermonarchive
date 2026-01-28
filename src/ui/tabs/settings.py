@@ -2,9 +2,9 @@ import streamlit as st
 import os
 import time
 import subprocess
-import tkinter as tk
-from tkinter import filedialog
+
 from src.core import processor
+from src.utils import dialogs
 
 def render_settings(config, save_config_func, APP_DATA_DIR, DB_PATH):
     st.title("⚙️ 설정 및 동기화")
@@ -15,16 +15,7 @@ def render_settings(config, save_config_func, APP_DATA_DIR, DB_PATH):
         c1, c2 = st.columns(2)
         with c1:
             if st.button("📂 폴더 변경"):
-                def select_folder_safe():
-                    try:
-                        root = tk.Tk(); root.withdraw(); root.wm_attributes('-topmost', 1)
-                        folder_path = filedialog.askdirectory(master=root)
-                        return folder_path
-                    except: return None
-                    finally:
-                        try: root.destroy() 
-                        except: pass
-                p = select_folder_safe()
+                p = dialogs.select_folder()
                 if p: 
                     config['target_folder'] = p
                     save_config_func(config)
